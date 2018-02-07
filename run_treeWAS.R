@@ -36,7 +36,6 @@ if ( no_args<4  ){
   
   text <- writeLines( c("", str2, "", " Options:", str3))
   stop( stre )
-  
 }
 
 # check for optional arguements
@@ -69,11 +68,13 @@ tree_raw <- midpoint(read.tree(tree_file))
 snps_org <- fread(snps_file, sep="\t", header=T)
 no_sites <- length(snps_org[1,])
 snps_raw <- data.matrix(snps_org[,2:no_sites])
-rownames(snps_raw) <- snps_org$Samples
+rownames(snps_raw) <- snps_org[,1]
 
 # get phenotypes
 no_cols <- length(colnames(raw_metadata))
 myCols <- colnames(raw_metadata)[2:no_cols]
+
+field <- myCols[1]
 
 for (field in myCols){
   
