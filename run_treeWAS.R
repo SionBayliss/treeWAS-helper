@@ -68,7 +68,7 @@ tree_raw <- midpoint(read.tree(tree_file))
 snps_org <- fread(snps_file, sep="\t", header=T)
 no_sites <- length(snps_org[1,])
 snps_raw <- data.matrix(snps_org[,2:no_sites])
-rownames(snps_raw) <- snps_org[,1]
+rownames(snps_raw) <- snps_org$Samples
 
 # get phenotypes
 no_cols <- length(colnames(raw_metadata))
