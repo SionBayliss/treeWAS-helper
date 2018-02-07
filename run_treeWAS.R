@@ -74,8 +74,6 @@ rownames(snps_raw) <- snps_org$Samples
 no_cols <- length(colnames(raw_metadata))
 myCols <- colnames(raw_metadata)[2:no_cols]
 
-field <- myCols[1]
-
 for (field in myCols){
   
   writeLines(c(sprintf(" - processing: %s",field)))
