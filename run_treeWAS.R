@@ -67,8 +67,14 @@ tree_raw <- midpoint(read.tree(tree_file))
 # fread 
 snps_org <- fread(snps_file, sep="\t", header=T)
 no_sites <- length(snps_org[1,])
-snps_raw <- data.matrix(snps_org[,2:no_sites])
+
+# convert to matrix
+snps_raw <- as.matrix(snps_org[,2:no_sites], header=TRUE)
 rownames(snps_raw) <- snps_org$Samples
+
+# alt - conversion
+#snps_raw <- data.matrix(snps_org[,2:no_sites])
+#rownames(snps_raw) <- snps_org$Samples
 
 # get phenotypes
 no_cols <- length(colnames(raw_metadata))
@@ -89,7 +95,7 @@ for (field in myCols){
   # remove samples not in metadata, tips and tree
   tips <- tree_raw$tip.label 
   meta_ids <- metadata$id
-  snp_ids <-rownames(snps_raw)
+  snp_ids <- rownames(snps_raw)
   
   # intersection between all lists
   include <- intersect(intersect(meta_ids,snp_ids), tips)
@@ -103,6 +109,7 @@ for (field in myCols){
   
   # remove any snps that are not in phenotype 
   snps <- snps_raw[ rownames(snps_raw) %in% include, ] 
+  rownames(snps) <- rownames(snps_raw)[rownames(snps_raw) %in% include]
   
   # make phenotype factor
   phen <- as.vector(metadata$pheno)
@@ -124,7 +131,7 @@ for (field in myCols){
   }else{
     
     # feedback
-    (sprintf (" - %s samples intersect between variants/metadata/tree", no_samples))
+    writeLines(c(sprintf (" - %s samples intersect between variants/metadata/tree", no_samples)))
   
     # Examine distribution of ranks:
     phen.rank <- rank(phen, ties.method = "average")
