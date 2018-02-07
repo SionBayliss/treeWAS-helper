@@ -131,7 +131,7 @@ for (field in myCols){
     phen.rank <- rank(phen, ties.method = "average")
     
     # Check distribution of phenotypes as histograms
-    out_hist_name = sprintf("%s/%s.treeWAS.histograms.pdf", output_dir, field)
+    out_hist_name = sprintf("%s/%s.histograms.pdf", output_dir, field)
     pdf(out_hist_name)
     hist(phen.rank)
     hist(phen)
@@ -153,7 +153,7 @@ for (field in myCols){
     }
     
     # output filename
-    out_plot_name <- sprintf("%s/%s.treeWAS.plots.pdf", output_dir, field)
+    out_plot_name <- sprintf("%s/%s.treeWAS_plots.pdf", output_dir, field)
     
     # run treewas
     out <- treeWAS(snps = snps,
@@ -188,7 +188,7 @@ for (field in myCols){
       # replace 0 with min_p
       out$terminal$sig.snps$p.value[out$terminal$sig.snps$p.value == 0] <- sprintf("<%s",min_p)
       
-      out_term_name = sprintf("%s/%s.terminal.treewas.tab", output_dir, field)
+      out_term_name = sprintf("%s/%s.terminal.significant.tab", output_dir, field)
       out_term <- out$terminal$sig.snps[order(out$terminal$sig.snps$p.value), ]
       write.table(out_term, file = out_term_name, append = F, quote = F, sep = "\t",
                   eol = "\n", na = "NA", dec = ".", row.names = TRUE,
@@ -202,7 +202,7 @@ for (field in myCols){
       # replace 0 with min_p
       out$simultaneous$sig.snps$p.value[out$simultaneous$sig.snps$p.value == 0] <- sprintf("<%s",min_p)
       
-      out_simul_name = sprintf("%s/%s.simultaneous.treewas.tab", output_dir, field)
+      out_simul_name = sprintf("%s/%s.simultaneous.significant.tab", output_dir, field)
       out_simul <- out$simultaneous$sig.snps[order(out$simultaneous$sig.snps$p.value), ]
       write.table(out_simul, file = out_simul_name, append = F, quote = F, sep = "\t",
                   eol = "\n", na = "NA", dec = ".", row.names = TRUE,
@@ -216,7 +216,7 @@ for (field in myCols){
       # replace 0 with min_p
       out$subsequent$sig.snps$p.value[out$subsequent$sig.snps$p.value == 0] <- sprintf("<%s",min_p)
       
-      out_subs_name = sprintf("%s/%s.subsequent.treewas.tab", output_dir, field)
+      out_subs_name = sprintf("%s/%s.subsequent.significant.tab", output_dir, field)
       out_subs <- out$subsequent$sig.snps[order(out$subsequent$sig.snps$p.value), ]
       write.table(out_subs, file = out_subs_name, append = F, quote = F, sep = "\t",
                 eol = "\n", na = "NA", dec = ".", row.names = TRUE,
