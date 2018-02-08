@@ -33,17 +33,22 @@ if ( no_args<4  ){
   stre <- sprintf( "not enough commands supplied script.")
   str2 <- sprintf( " run_treeWAS.R [snps/variants] [metadata] [tree] [output directory] [optional args]" )
   str3 <- sprintf( "    --r    rank phenotype data [default:off]")
+  str4 <- sprintf( "    --s    remove biallelic loci using get.binary.snps, SLOW [default:off]")
   
-  text <- writeLines( c("", str2, "", " Options:", str3))
+  text <- writeLines( c("", str2, "", " Options:", str3, str4))
   stop( stre )
 }
 
 # check for optional arguements
+snps <- 0
 ranked <- 0
 if(no_args>4){
   for(i in 5:no_args){
     if(args[i] == "--r"){
       ranked <- 1
+    }
+    if(args[i] == "--s"){
+      snps <- 1
     }
   }
 }
@@ -53,6 +58,11 @@ snps_file <- args[1]
 meta_file <- args[2]
 tree_file <- args[3]
 output_dir <-args[4]
+
+#snps_file <- "/media/multispecies/BIGSdb/PIRATE/C_coli/treeWAS/snps.treeWAS_input"
+#meta_file <- "/media/multispecies/BIGSdb/PIRATE/C_coli/treeWAS_metadata.C_coli.tsv"
+#tree_file <- "/media/multispecies/BIGSdb/PIRATE/C_coli/binary_presence_absence.nwk"
+#output_dir <- "/media/multispecies/BIGSdb/PIRATE/C_coli/treeWAS/snps/"
 
 # check output directory exists - make if possible
 dir.create(output_dir, showWarnings = F )
@@ -120,8 +130,10 @@ for (field in myCols){
   suffixes <- unique(suffixes)
   
   # if input is snp data then remove extraneous data
-  if(all(suffixes %in% c(".a", ".c", ".g", ".t"))){
-    snps <- get.binary.snps(snps)
+  if(snps == 1){
+    if(all(suffixes %in% c(".a", ".c", ".g", ".t"))){
+      snps <- get.binary.snps(snps)
+    }
   }
   
   # Check that samples remain to test
@@ -152,6 +164,9 @@ for (field in myCols){
     # ensure the tree does not have negative branch lengths and is binary
     #tree$edge.length[tree$edge.length < 0] <- abs(min(tree$edge.length))
     
+    # set max chunk size
+    max_chunk_size <- 100000
+    
     # check if tree is binary 
     if ( !is.binary.tree(tree) ){
       (sprintf( " - WARNING: the tree supplied was not bifurcating. It has been converted but the input tree should be checked." ))
@@ -167,13 +182,13 @@ for (field in myCols){
                    tree = tree,
                    n.subs = NULL,
                    n.snps.sim = ncol(snps)*10,
-                   chunk.size = ncol(snps),
+                   chunk.size = max_chunk_size,
                    test = c("terminal", "simultaneous", "subsequent"),
                    snps.reconstruction = "parsimony",
                    snps.sim.reconstruction = "parsimony",
                    phen.reconstruction = "parsimony",
                    phen.type = NULL,
-                   na.rm = TRUE,
+                   na.rm = FALSE,
                    p.value = 0.01,
                    p.value.correct = "bonf",
                    p.value.by = "count",
